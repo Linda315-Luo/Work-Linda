@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>工作备忘录 - Linda专用</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css"/>
+<style>
+:root{
+  --bg:#F7F6F3;--bg2:#EFEDE8;--bg3:#E6E3DC;
+  --surface:#FFFFFF;--surface2:#F7F6F3;
+  --border:#E2DED6;--border2:#D4CFC6;
+  --text:#1A1917;--text2:#6B6860;--text3:#A09C96;
+  --radius:12px;--radius-sm:8px;--radius-xs:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-sm);padding:6px 14px;font-size:13px;transition:all .15s}
+button:hover{background:var(--bg2);border-color:var(--border2)}
+input,select,textarea{font-family:inherit;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:#999}
+textarea{resize:vertical;min-height:55px}
+
+/* Layout */
+.app{max-width:720px;margin:0 auto;padding:1.5rem 1rem 4rem}
+.top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-.5px;color:var(--text)}
+.app-date{font-size:13px;color:var(--text2);margin-top:2px}
+.top-actions{display:flex;gap:8px}
+
+/* Stats */
+.stats{display:grid;gap:8px;margin-bottom:1.25rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;text-align:center;box-shadow:var(--shadow)}
+.stat-n{font-size:22px;font-weight:600}
+.stat-l{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* Legend */
+.legend-bar{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.25rem;flex-wrap:wrap;box-shadow:var(--shadow)}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2)}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.leg-sep{color:var(--border2);font-size:14px}
+.settings-link{margin-left:auto;font-size:12px;display:flex;align-items:center;gap:4px;color:var(--text2);background:transparent;border:1px solid var(--border);border-radius:20px;padding:3px 10px}
+.settings-link:hover{background:var(--bg2)}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{padding:5px 14px;border-radius:20px;font-size:13px;background:var(--surface);border:1px solid var(--border)}
+.tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* Group */
+.group{margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.group-hd{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;background:var(--bg2);user-select:none;transition:background .15s}
+.group-hd:hover{background:var(--bg3)}
+.group-arrow{font-size:13px;color:var(--text3);transition:transform .2s;flex-shrink:0}
+.group-arrow.open{transform:rotate(90deg)}
+.group-title{font-size:13px;font-weight:600;flex:1}
+.group-cnt{font-size:11px;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1px 7px}
+.group-body.collapsed{display:none}
+
+/* Cards */
+.task-card{border-top:1px solid var(--border);background:var(--surface);transition:background .12s}
+.task-card:hover{background:var(--bg2)}
+.card-inner{display:flex}
+.card-accent{width:4px;flex-shrink:0}
+.card-body{flex:1;padding:11px 13px;min-width:0}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px}
+.card-name{font-size:14px;font-weight:500;line-height:1.4}
+.card-name.done{text-decoration:line-through;color:var(--text3)}
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap;border:none;background:transparent}
+.b-ok{background:#E1F5EE;color:#085041}
+.b-daily{background:#EEEDFE;color:#3C3489}
+.b-done{background:#F0EDE7;color:#6B6860}
+.card-acts{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.icon-btn{background:transparent;border:none;color:var(--text3);padding:4px;border-radius:6px;font-size:15px;line-height:1;display:flex;align-items:center}
+.icon-btn:hover{color:var(--text);background:var(--bg3)}
+.chk{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;padding:0}
+.chk.done{background:#1D9E75;border-color:#1D9E75}
+.chk.done::after{content:'';display:block;width:5px;height:9px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px)}
+.meta-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.meta-item{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:3px}
+.meta-item.warn{color:#A32D2D}
+.alert-bar{border-radius:var(--radius-xs);padding:6px 10px;font-size:12px;margin-bottom:7px;display:flex;align-items:flex-start;gap:6px}
+.docs-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.doc-chip{font-size:11px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-xs);padding:2px 7px;color:var(--text2);display:flex;align-items:center;gap:3px}
+.doc-chip.miss{border-color:#E24B4A;color:#A32D2D;background:#FEF0F0}
+.note-row{font-size:11px;color:var(--text3);margin-top:4px;display:flex;align-items:flex-start;gap:3px}
+.empty{text-align:center;padding:3rem;color:var(--text3)}
+.empty i{font-size:32px;display:block;margin:0 auto 10px}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:200;padding:1rem}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-md)}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:1.1rem}
+.type-toggle{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1rem}
+.type-btn{padding:8px;font-size:13px;border:none;border-radius:0;background:transparent;color:var(--text2);text-align:center}
+.type-btn.active{background:var(--bg2);color:var(--text);font-weight:500}
+.form-row{margin-bottom:11px}
+.form-row label{font-size:12px;color:var(--text2);display:block;margin-bottom:3px}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:1.1rem}
+.btn-primary{background:var(--text);color:#fff;border-color:var(--text)}
+.btn-primary:hover{background:#333;border-color:#333}
+
+/* Settings */
+.rule-row{display:flex;align-items:center;gap:7px;margin-bottom:8px;padding:8px 10px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.rule-row input[type=color]{width:30px;height:28px;padding:2px 3px;border-radius:4px;flex-shrink:0;cursor:pointer}
+.rule-row input[type=text]{flex:1}
+.rule-row input[type=number]{width:52px;flex:0 0 52px}
+.rule-del{background:transparent;border:none;color:var(--text3);font-size:18px;padding:0 3px;line-height:1}
+.rule-del:hover{color:#A32D2D;background:transparent}
+.rule-hint{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6;padding:8px 10px;background:var(--bg2);border-radius:var(--radius-xs);border-left:3px solid var(--border2)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="top-row">
+    <div>
+      <div class="app-title">工作备忘录 · Linda专用</div>
+      <div class="app-date" id="today-lbl"></div>
+    </div>
+    <div class="top-actions">
+      <button class="settings-link" onclick="openSettings()"><i class="ti ti-settings"></i> 预警设置</button>
+      <button onclick="openModal(null)" style="display:flex;align-items:center;gap:5px"><i class="ti ti-plus"></i> 新建任务</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats-grid"></div>
+  <div class="legend-bar" id="legend-bar"></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('all',this)">全部</button>
+    <button class="tab" onclick="setTab('alert',this)">预警中</button>
+    <button class="tab" onclick="setTab('deadline',this)">有交期</button>
+    <button class="tab" onclick="setTab('daily',this)">日常</button>
+    <button class="tab" onclick="setTab('done',this)">已完成</button>
+  </div>
+
+  <div id="task-container"></div>
+</div>
+
+<div id="modal-root"></div>
+
+<script>
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+const FMT=d=>d.toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+const ISO=d=>{const p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`};
+document.getElementById('today-lbl').textContent=FMT(TODAY);
+
+// ── Rules (load from localStorage) ───────────────────────────────────────
+let rules=JSON.parse(localStorage.getItem('wm_rules')||'null')||[
+  {id:1,label:'一级',days:12,color:'#639922',bgColor:'#EAF3DE',textColor:'#27500A',desc:'启动确认'},
+  {id:2,label:'二级',days:7, color:'#EF9F27',bgColor:'#FAEEDA',textColor:'#633806',desc:'进度跟进'},
+  {id:3,label:'三级',days:3, color:'#E24B4A',bgColor:'#FCEBEB',textColor:'#791F1F',desc:'紧急处理'},
+];
+let ruleNid=Math.max(0,...rules.map(r=>r.id))+1;
+function saveRules(){localStorage.setItem('wm_rules',JSON.stringify(rules));}
+
+// ── Tasks (load from localStorage) ───────────────────────────────────────
+let tasks=JSON.parse(localStorage.getItem('wm_tasks')||'null')||[
+  {id:1,type:'deadline',name:'YIHUA包材首件确认',vendor:'YIHUA',deadline:'2026-06-27',docDate:'2026-06-10',docs:['首件报告','尺寸图','外观确认书'],missing:[{name:'外观确认书',status:'待补',date:'2026-06-18'}],note:'首件确认需提前协调品质',done:false},
+  {id:2,type:'deadline',name:'包材印刷色稿审核',vendor:'ABC印刷',deadline:'2026-06-08',docDate:'',docs:['色稿PDF','Pantone色卡'],missing:[{name:'Pantone色卡',status:'待补',date:'2026-06-04'}],note:'',done:false},
+  {id:3,type:'daily',name:'更新季度数据表格',vendor:'',taskDate:'2026-06-02',docs:[],missing:[],note:'汇总各部门数据',done:false},
+  {id:4,type:'daily',name:'周例会准备',vendor:'',taskDate:'2026-06-02',docs:[],missing:[],note:'',done:false},
+];
+let nid=Math.max(0,...tasks.map(t=>t.id))+1;
+function saveTasks(){localStorage.setItem('wm_tasks',JSON.stringify(tasks));}
+
+function daysTo(iso){if(!iso)return null;return Math.round((new Date(iso+'T00:00:00')-TODAY)/864e5);}
+function getAlertRule(t){
+  if(t.done||t.type!=='deadline')return null;
+  const d=daysTo(t.deadline);if(d===null)return null;
+  const sorted=[...rules].sort((a,b)=>a.days-b.days);
+  for(const r of sorted){if(d<=r.days)return r;}
+  return null;
+}
+function accentColor(t){const r=getAlertRule(t);if(r)return r.color;if(t.type==='daily')return'#AFA9EC';return'#E2DED6';}
+
+// ── Collapsed state ───────────────────────────────────────────────────────
+const collapsed={};
+function toggleGroup(key){collapsed[key]=!collapsed[key];render();}
+
+let curTab='all';
+
+function renderStats(){
+  const sortedR=[...rules].sort((a,b)=>b.days-a.days);
+  let h=`<div class="stat" style="grid-column:1"><div class="stat-n">${tasks.length}</div><div class="stat-l">全部任务</div></div>`;
+  sortedR.forEach(r=>{
+    const cnt=tasks.filter(t=>{const ar=getAlertRule(t);return ar&&ar.id===r.id&&!t.done;}).length;
+    h+=`<div class="stat"><div class="stat-n" style="color:${r.textColor}">${cnt}</div><div class="stat-l">${r.label}预警</div></div>`;
+  });
+  const el=document.getElementById('stats-grid');
+  el.style.gridTemplateColumns=`repeat(${1+sortedR.length},1fr)`;
+  el.innerHTML=h;
+}
+
+function renderLegend(){
+  const sorted=[...rules].sort((a,b)=>b.days-a.days);
+  let h=sorted.map(r=>`<span class="leg-item"><span class="leg-dot" style="background:${r.color}"></span>${r.label}：前${r.days}天，${r.desc}</span><span class="leg-sep">·</span>`).join('');
+  h+=`<span class="leg-item"><span class="leg-dot" style="background:#AFA9EC"></span>日常任务</span>`;
+  h+=`<button class="settings-link" onclick="openSettings()"><i class="ti ti-settings"></i> 自定义</button>`;
+  document.getElementById('legend-bar').innerHTML=h;
+}
+
+function cardHTML(t){
+  const rule=getAlertRule(t);const days=daysTo(t.deadline);
+  let badge='';
+  if(t.done)badge=`<span class="badge b-done">已完成</span>`;
+  else if(t.type==='daily')badge=`<span class="badge b-daily">日常</span>`;
+  else if(rule)badge=`<span class="badge" style="background:${rule.bgColor};color:${rule.textColor}">${rule.label}预警</span>`;
+  else badge=`<span class="badge b-ok">正常</span>`;
+
+  let alertHTML='';
+  if(rule&&!t.done){
+    const hasMiss=t.missing&&t.missing.length>0;
+    const sortedR=[...rules].sort((a,b)=>a.days-b.days);
+    const idx=sortedR.findIndex(r=>r.id===rule.id);
+    let msg=idx===0?`${rule.label}预警 — 距交期仅 ${days} 天，必须立刻处理${hasMiss?'，仍有缺失资料':''}！`
+            :idx===1?`${rule.label}预警 — 距交期 ${days} 天，请跟进确认进度${hasMiss?'，有缺失资料需补齐':''}。`
+            :`${rule.label}预警 — 距交期 ${days} 天，现在是启动确认的合适时机。`;
+    alertHTML=`<div class="alert-bar" style="background:${rule.bgColor};color:${rule.textColor}"><i class="ti ti-alert-circle" style="font-size:14px;flex-shrink:0;margin-top:1px"></i><span>${msg}</span></div>`;
+  }
+
+  let metaHTML='';
+  if(t.type==='deadline'){
+    if(days!==null){const cls=days<0?'meta-item warn':'meta-item';const txt=days<0?`已逾期 ${Math.abs(days)} 天`:`交期 ${t.deadline.slice(5)} · ${days} 天后`;metaHTML+=`<span class="${cls}"><i class="ti ti-calendar"></i>${txt}</span>`;}
+    if(t.docDate)metaHTML+=`<span class="meta-item"><i class="ti ti-file-time"></i>资料提供 ${t.docDate.slice(5)}</span>`;
+    if(t.vendor)metaHTML+=`<span class="meta-item"><i class="ti ti-building"></i>${t.vendor}</span>`;
+  } else {
+    if(t.taskDate){const d=daysTo(t.taskDate);const txt=d===0?'今天':d===1?'明天':d===-1?'昨天':(d<0?`${Math.abs(d)}天前`:t.taskDate.slice(5));metaHTML+=`<span class="meta-item"><i class="ti ti-calendar"></i>${txt}</span>`;}
+    if(t.vendor)metaHTML+=`<span class="meta-item"><i class="ti ti-building"></i>${t.vendor}</span>`;
+  }
+
+  let docsHTML='';
+  if(t.docs&&t.docs.length){
+    const chips=t.docs.map(d=>{const m=t.missing&&t.missing.find(x=>x.name===d);return m?`<span class="doc-chip miss"><i class="ti ti-file-x" style="font-size:11px"></i>${d}<span style="opacity:.7;margin-left:2px">(${m.status}${m.date?'·'+m.date.slice(5):''})</span></span>`:`<span class="doc-chip"><i class="ti ti-file-check" style="font-size:11px"></i>${d}</span>`;}).join('');
+    docsHTML=`<div class="docs-row">${chips}</div>`;
+  }
+  const noteHTML=t.note?`<div class="note-row"><i class="ti ti-notes" style="font-size:12px;flex-shrink:0;margin-top:1px"></i>${t.note}</div>`:'';
+
+  return`<div class="task-card"><div class="card-inner">
+    <div class="card-accent" style="background:${accentColor(t)}"></div>
+    <div class="card-body">
+      <div class="card-head">
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;flex:1;min-width:0">
+          <button class="chk${t.done?' done':''}" onclick="toggleDone(${t.id})"></button>
+          <span class="card-name${t.done?' done':''}">${t.name}</span>
+        </div>
+        <div class="card-acts">${badge}
+          <button class="icon-btn" onclick="openModal(${t.id})"><i class="ti ti-edit"></i></button>
+          <button class="icon-btn" onclick="delTask(${t.id})"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+      ${metaHTML?`<div class="meta-row">${metaHTML}</div>`:''}
+      ${alertHTML}${docsHTML}${noteHTML}
+    </div>
+  </div></div>`;
+}
+
+function groupKey(t){
+  if(t.done)return'__done__';
+  if(t.type==='daily')return'__daily__';
+  const r=getAlertRule(t);
+  if(r)return`__alert_${r.id}__`;
+  return'__normal__';
+}
+function groupMeta(key){
+  if(key==='__done__')return{label:'已完成',color:'var(--text2)',dot:'#ccc'};
+  if(key==='__daily__')return{label:'日常任务',color:'var(--text)',dot:'#AFA9EC'};
+  if(key==='__normal__')return{label:'有交期·正常',color:'var(--text)',dot:'#E2DED6'};
+  const rid=parseInt(key.replace('__alert_','').replace('__',''));
+  const r=rules.find(x=>x.id===rid);
+  return r?{label:`${r.label}预警`,color:r.textColor,dot:r.color}:{label:'预警',color:'#666',dot:'#ccc'};
+}
+
+function render(){
+  renderLegend();renderStats();
+
+  let filtered=tasks.filter(t=>{
+    if(curTab==='done')return t.done;
+    if(curTab==='alert')return!t.done&&!!getAlertRule(t);
+    if(curTab==='deadline')return!t.done&&t.type==='deadline';
+    if(curTab==='daily')return!t.done&&t.type==='daily';
+    return true;
+  });
+  filtered.sort((a,b)=>{
+    if(a.done!==b.done)return a.done?1:-1;
+    const ra=getAlertRule(a),rb=getAlertRule(b);
+    const da=ra?ra.days:0,db=rb?rb.days:0;
+    if(da!==db)return db-da;
+    return(a.deadline||a.taskDate||'').localeCompare(b.deadline||b.taskDate||'');
+  });
+
+  const sortedRules=[...rules].sort((a,b)=>a.days-b.days);
+  const groupOrder=[...sortedRules.map(r=>`__alert_${r.id}__`),'__normal__','__daily__','__done__'];
+  const groups={};
+  filtered.forEach(t=>{const k=groupKey(t);(groups[k]=groups[k]||[]).push(t);});
+  const keys=groupOrder.filter(k=>groups[k]);
+  Object.keys(groups).forEach(k=>{if(!keys.includes(k))keys.push(k);});
+
+  if(!keys.length){
+    document.getElementById('task-container').innerHTML='<div class="empty"><i class="ti ti-clipboard-check"></i>暂无任务</div>';
+    return;
+  }
+  const html=keys.map(key=>{
+    const meta=groupMeta(key);
+    const items=groups[key];
+    const isOpen=collapsed[key]===undefined?true:!collapsed[key];
+    return`<div class="group">
+      <div class="group-hd" onclick="toggleGroup('${key}')">
+        <i class="ti ti-chevron-right group-arrow${isOpen?' open':''}"></i>
+        <span class="leg-dot" style="background:${meta.dot}"></span>
+        <span class="group-title" style="color:${meta.color}">${meta.label}</span>
+        <span class="group-cnt">${items.length}</span>
+      </div>
+      <div class="group-body${isOpen?'':' collapsed'}">${items.map(cardHTML).join('')}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('task-container').innerHTML=html;
+}
+
+function setTab(tab,el){curTab=tab;document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function toggleDone(id){const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;saveTasks();}render();}
+function delTask(id){if(!confirm('确定删除这个任务？'))return;tasks=tasks.filter(x=>x.id!==id);saveTasks();render();}
+
+// ── Task Modal ─────────────────────────────────────────────────────────────
+let formType='daily';
+function buildTaskModal(t){
+  const isEdit=!!t;const tp=isEdit?t.type:formType;
+  const defDL=ISO(new Date(TODAY.getTime()+20*864e5));
+  return`<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-title">${isEdit?'编辑任务':'新建任务'}</div>
+    <div class="type-toggle">
+      <button class="type-btn${tp==='deadline'?' active':''}" id="tbtn-dl" onclick="switchType('deadline')"><i class="ti ti-calendar-due"></i> 有交期任务</button>
+      <button class="type-btn${tp==='daily'?' active':''}" id="tbtn-dy" onclick="switchType('daily')"><i class="ti ti-list-check"></i> 日常任务</button>
+    </div>
+    <div class="form-row"><label>任务名称</label><input type="text" id="f-name" value="${isEdit?escH(t.name):''}" placeholder="任务名称"/></div>
+    <div class="form-row"><label>供应商 / 项目（可选）</label><input type="text" id="f-vendor" value="${isEdit?escH(t.vendor||''):''}" placeholder="如：YIHUA"/></div>
+    <div id="deadline-fields" style="display:${tp==='deadline'?'block':'none'}">
+      <div class="form-row"><label>交期</label><input type="date" id="f-deadline" value="${isEdit&&t.deadline?t.deadline:defDL}"/></div>
+      <div class="form-row"><label>资料提供时间（可选）</label><input type="date" id="f-doc-date" value="${isEdit?t.docDate||'':''}"/></div>
+      <div class="form-row"><label>所需资料（逗号分隔）</label><input type="text" id="f-docs" value="${isEdit?(t.docs||[]).join(','):''}" placeholder="首件报告,尺寸图,外观确认书"/></div>
+      <div class="form-row"><label>缺失资料及补充时间</label><input type="text" id="f-missing" value="${isEdit?(t.missing||[]).map(m=>`${m.name}(${m.status}${m.date?','+m.date:''})`).join(','):''}" placeholder="外观确认书(待补,6-18)"/></div>
+    </div>
+    <div id="daily-fields" style="display:${tp==='daily'?'block':'none'}">
+      <div class="form-row"><label>执行日期</label><input type="date" id="f-task-date" value="${isEdit&&t.taskDate?t.taskDate:ISO(TODAY)}"/></div>
+    </div>
+    <div class="form-row"><label>备注（可选）</label><textarea id="f-note">${isEdit?escH(t.note||''):''}</textarea></div>
+    <div class="modal-footer"><button onclick="closeModal()">取消</button><button class="btn-primary" onclick="saveTask(${isEdit?t.id:'null'})">保存</button></div>
+  </div></div>`;
+}
+function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function switchType(tp){formType=tp;document.getElementById('tbtn-dl').classList.toggle('active',tp==='deadline');document.getElementById('tbtn-dy').classList.toggle('active',tp==='daily');document.getElementById('deadline-fields').style.display=tp==='deadline'?'block':'none';document.getElementById('daily-fields').style.display=tp==='daily'?'block':'none';}
+function openModal(id){const t=id?tasks.find(x=>x.id===id):null;formType=t?t.type:'daily';document.getElementById('modal-root').innerHTML=buildTaskModal(t);}
+function closeModal(){document.getElementById('modal-root').innerHTML='';}
+function parseMissing(str){if(!str||!str.trim())return[];return str.split(',').map(s=>{s=s.trim();const m=s.match(/^(.+?)\(([^,)]+)(?:,([^)]+))?\)$/);return m?{name:m[1].trim(),status:m[2].trim(),date:m[3]?m[3].trim():''}:{name:s,status:'待补',date:''};}).filter(x=>x.name);}
+function saveTask(rawId){
+  const name=(document.getElementById('f-name').value||'').trim();if(!name)return;
+  const tp=formType;
+  const obj={id:rawId&&rawId!='null'?+rawId:nid++,type:tp,name,vendor:(document.getElementById('f-vendor').value||'').trim(),deadline:tp==='deadline'?(document.getElementById('f-deadline').value||''):'',docDate:tp==='deadline'?(document.getElementById('f-doc-date').value||''):'',docs:tp==='deadline'?((document.getElementById('f-docs').value||'').split(',').map(s=>s.trim()).filter(Boolean)):[],missing:tp==='deadline'?parseMissing(document.getElementById('f-missing').value):[],taskDate:tp==='daily'?(document.getElementById('f-task-date').value||''):'',note:(document.getElementById('f-note').value||'').trim(),done:false};
+  if(rawId&&rawId!='null'){const i=tasks.findIndex(x=>x.id===+rawId);if(i>=0){obj.done=tasks[i].done;tasks[i]=obj;}}else tasks.push(obj);
+  saveTasks();closeModal();render();
+}
+
+// ── Settings Modal ─────────────────────────────────────────────────────────
+function buildSettingsModal(){
+  const rows=rules.map(r=>`
+    <div class="rule-row">
+      <input type="color" value="${r.color}" oninput="liveUpdateRule(${r.id},'color',this.value)" title="颜色"/>
+      <input type="text" value="${escH(r.label)}" onchange="liveUpdateRule(${r.id},'label',this.value)" placeholder="名称" style="max-width:60px"/>
+      <span style="font-size:12px;color:var(--text2);white-space:nowrap">前</span>
+      <input type="number" value="${r.days}" min="1" max="999" onchange="liveUpdateRule(${r.id},'days',+this.value)" style="max-width:55px"/>
+      <span style="font-size:12px;color:var(--text2);white-space:nowrap">天</span>
+      <input type="text" value="${escH(r.desc)}" onchange="liveUpdateRule(${r.id},'desc',this.value)" placeholder="说明"/>
+      <button class="rule-del" onclick="delRule(${r.id})">×</button>
+    </div>`).join('');
+  return`<div class="overlay" onclick="if(event.target===this)closeSettings()"><div class="modal">
+    <div class="modal-title">自定义预警规则</div>
+    <div class="rule-hint">每一级在"距交期 ≤ N 天"时自动触发。可以增减级别、调整天数和颜色。保存后所有任务立即生效。</div>
+    <div id="rules-list">${rows}</div>
+    <button onclick="addRule()" style="width:100%;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:5px"><i class="ti ti-plus"></i> 添加预警级别</button>
+    <div class="modal-footer"><button onclick="closeSettings()">完成</button></div>
+  </div></div>`;
+}
+function openSettings(){document.getElementById('modal-root').innerHTML=buildSettingsModal();}
+function closeSettings(){saveRules();document.getElementById('modal-root').innerHTML='';render();}
+function liveUpdateRule(id,field,val){
+  const r=rules.find(x=>x.id===id);if(!r)return;
+  r[field]=val;
+  if(field==='color'){r.bgColor=hexToLightBg(val);r.textColor=hexToDark(val);}
+}
+function delRule(id){if(rules.length<=1){alert('至少保留一条预警规则');return;}rules=rules.filter(x=>x.id!==id);document.getElementById('modal-root').innerHTML=buildSettingsModal();render();}
+function addRule(){rules.push({id:ruleNid++,label:`${rules.length+1}级`,days:Math.max(...rules.map(r=>r.days))+7,color:'#888888',bgColor:'rgba(136,136,136,0.12)',textColor:'#555555',desc:'自定义提醒'});document.getElementById('modal-root').innerHTML=buildSettingsModal();render();}
+function hexToLightBg(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},0.13)`;}
+function hexToDark(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);const lum=(0.299*r+0.587*g+0.114*b)/255;return lum>0.55?`#${[r,g,b].map(x=>Math.max(0,Math.floor(x*0.45)).toString(16).padStart(2,'0')).join('')}`:hex;}
+
+render();
+</script>
+</body>
+</html>
