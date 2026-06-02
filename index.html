@@ -73,8 +73,9 @@ textarea{resize:vertical;min-height:55px}
 .b-daily{background:#EEEDFE;color:#3C3489}
 .b-done{background:#F0EDE7;color:#6B6860}
 .card-acts{display:flex;align-items:center;gap:3px;flex-shrink:0}
-.icon-btn{background:transparent;border:none;color:var(--text3);padding:4px;border-radius:6px;font-size:15px;line-height:1;display:flex;align-items:center}
-.icon-btn:hover{color:var(--text);background:var(--bg3)}
+.icon-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:5px 9px;border-radius:6px;font-size:14px;line-height:1;display:flex;align-items:center;gap:3px;transition:all .15s}
+.icon-btn:hover{color:var(--text);background:var(--bg3);border-color:var(--border2)}
+.icon-btn.del:hover{color:#A32D2D;background:#FEF0F0;border-color:#f5c6c6}
 .chk{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;padding:0}
 .chk.done{background:#1D9E75;border-color:#1D9E75}
 .chk.done::after{content:'';display:block;width:5px;height:9px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px)}
@@ -248,8 +249,8 @@ function cardHTML(t){
           <span class="card-name${t.done?' done':''}">${t.name}</span>
         </div>
         <div class="card-acts">${badge}
-          <button class="icon-btn" onclick="openModal(${t.id})"><i class="ti ti-edit"></i></button>
-          <button class="icon-btn" onclick="delTask(${t.id})"><i class="ti ti-trash"></i></button>
+          <button class="icon-btn" onclick="openModal(${t.id})"><i class="ti ti-edit"></i> 编辑</button>
+          <button class="icon-btn del" onclick="delTask(${t.id})"><i class="ti ti-trash"></i> 删除</button>
         </div>
       </div>
       ${metaHTML?`<div class="meta-row">${metaHTML}</div>`:''}
